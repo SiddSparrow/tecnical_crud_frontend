@@ -3,6 +3,11 @@
   <a routerLink="/pedidos" class="btn btn-outline-secondary btn-sm">← Voltar</a>
 </div>
 
+@if (loadingData) {
+  <div class="text-center py-5">
+    <div class="spinner-border text-primary"></div>
+  </div>
+} @else {
 <div class="card">
   <div class="card-body">
     @if (errorMessage) {
@@ -121,3 +126,4 @@
     </div>
   </div>
 </div>
+}

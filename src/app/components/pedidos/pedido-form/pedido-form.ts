@@ -2,6 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { forkJoin } from 'rxjs';
 import Swal from 'sweetalert2';
 import { Cliente } from '../../../models/cliente.model';
 import { Produto } from '../../../models/produto.model';
@@ -36,6 +37,7 @@ export class PedidoForm implements OnInit {
   selectedProdutoId = '';
   selectedQuantidade = 1;
 
+  loadingData = true;
   loading = false;
   errorMessage = '';
 
@@ -48,11 +50,19 @@ export class PedidoForm implements OnInit {
   }
 
   ngOnInit(): void {
-    this.clienteService.list(1, 100).subscribe({
-      next: (res) => (this.clientes = res.data),
-    });
-    this.produtoService.list(1, 100).subscribe({
-      next: (res) => (this.produtos = res.data),
+    forkJoin([
+      this.clienteService.list(1, 1000),
+      this.produtoService.list(1, 1000),
+    ]).subscribe({
+      next: ([c, p]) => {
+        this.clientes = c.data;
+        this.produtos = p.data;
+        this.loadingData = false;
+      },
+      error: () => {
+        this.errorMessage = 'Erro ao carregar dados. Tente novamente.';
+        this.loadingData = false;
+      },
     });
   }
 
@@ -62,8 +72,20 @@ export class PedidoForm implements OnInit {
     if (!produto) return;
 
     const existing = this.itens.find((i) => i.produtoId === this.selectedProdutoId);
+    const currentQty = existing ? existing.quantidade : 0;
+    const totalQty = currentQty + this.selectedQuantidade;
+
+    if (totalQty > produto.estoque) {
+      Swal.fire(
+        'Estoque insuficiente',
+        `Disponível: ${produto.estoque}. No pedido: ${currentQty}. Tentando adicionar: ${this.selectedQuantidade}.`,
+        'warning',
+      );
+      return;
+    }
+
     if (existing) {
-      existing.quantidade += this.selectedQuantidade;
+      existing.quantidade = totalQty;
       existing.subtotal = existing.quantidade * existing.precoUnitario;
     } else {
       this.itens.push({
