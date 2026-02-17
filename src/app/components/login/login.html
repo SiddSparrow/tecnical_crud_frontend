@@ -1,0 +1,52 @@
+<div class="min-vh-100 d-flex align-items-center justify-content-center bg-light">
+  <div class="card" style="width: 100%; max-width: 420px;">
+    <div class="card-body p-4">
+      <h4 class="card-title text-center mb-4">Entrar</h4>
+
+      @if (errorMessage) {
+        <div class="alert alert-danger">{{ errorMessage }}</div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <div class="mb-3">
+          <label class="form-label">E-mail</label>
+          <input
+            type="email"
+            class="form-control"
+            formControlName="email"
+            [class.is-invalid]="form.get('email')?.invalid && form.get('email')?.touched"
+            placeholder="seu@email.com"
+          />
+          @if (form.get('email')?.invalid && form.get('email')?.touched) {
+            <div class="invalid-feedback">Informe um e-mail válido.</div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Senha</label>
+          <input
+            type="password"
+            class="form-control"
+            formControlName="senha"
+            [class.is-invalid]="form.get('senha')?.invalid && form.get('senha')?.touched"
+            placeholder="••••••"
+          />
+          @if (form.get('senha')?.invalid && form.get('senha')?.touched) {
+            <div class="invalid-feedback">Informe a senha.</div>
+          }
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100" [disabled]="loading">
+          @if (loading) {
+            <span class="spinner-border spinner-border-sm me-2"></span>
+          }
+          Entrar
+        </button>
+      </form>
+
+      <p class="text-center mt-3 mb-0">
+        Não tem conta? <a routerLink="/register">Registrar</a>
+      </p>
+    </div>
+  </div>
+</div>
