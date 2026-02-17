@@ -21,6 +21,7 @@ export class PedidoList implements OnInit {
   pageNumbers: number[] = [1];
   limit = 10;
   loading = false;
+  errorMessage = '';
 
   ngOnInit(): void {
     this.loadPedidos();
@@ -28,6 +29,7 @@ export class PedidoList implements OnInit {
 
   loadPedidos(): void {
     this.loading = true;
+    this.errorMessage = '';
     this.pedidoService.list(this.page, this.limit).subscribe({
       next: (res) => {
         this.pedidos = res.data;
@@ -36,6 +38,7 @@ export class PedidoList implements OnInit {
         this.loading = false;
       },
       error: () => {
+        this.errorMessage = 'Erro ao carregar pedidos.';
         this.loading = false;
       },
     });

@@ -104,7 +104,10 @@ export class ProdutoForm implements OnInit, OnDestroy {
   }
 
   onSubmit(): void {
-    if (this.form.invalid) return;
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
     this.loading = true;
     this.errorMessage = '';
 

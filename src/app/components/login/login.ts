@@ -22,7 +22,10 @@ export class Login {
   loading = false;
 
   onSubmit(): void {
-    if (this.form.invalid) return;
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
     this.loading = true;
     this.errorMessage = '';
     this.authService.login(this.form.value as { email: string; senha: string }).subscribe({

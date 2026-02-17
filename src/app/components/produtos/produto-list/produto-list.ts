@@ -21,6 +21,7 @@ export class ProdutoList implements OnInit {
   pageNumbers: number[] = [1];
   limit = 10;
   loading = false;
+  errorMessage = '';
 
   ngOnInit(): void {
     this.loadProdutos();
@@ -28,6 +29,7 @@ export class ProdutoList implements OnInit {
 
   loadProdutos(): void {
     this.loading = true;
+    this.errorMessage = '';
     this.produtoService.list(this.page, this.limit).subscribe({
       next: (res) => {
         this.produtos = res.data;
@@ -36,6 +38,7 @@ export class ProdutoList implements OnInit {
         this.loading = false;
       },
       error: () => {
+        this.errorMessage = 'Erro ao carregar produtos.';
         this.loading = false;
       },
     });

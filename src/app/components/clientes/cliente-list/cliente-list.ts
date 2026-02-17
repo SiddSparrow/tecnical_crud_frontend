@@ -19,6 +19,7 @@ export class ClienteList implements OnInit {
   pageNumbers: number[] = [1];
   limit = 10;
   loading = false;
+  errorMessage = '';
 
   ngOnInit(): void {
     this.loadClientes();
@@ -26,6 +27,7 @@ export class ClienteList implements OnInit {
 
   loadClientes(): void {
     this.loading = true;
+    this.errorMessage = '';
     this.clienteService.list(this.page, this.limit).subscribe({
       next: (res) => {
         this.clientes = res.data;
@@ -34,6 +36,7 @@ export class ClienteList implements OnInit {
         this.loading = false;
       },
       error: () => {
+        this.errorMessage = 'Erro ao carregar clientes.';
         this.loading = false;
       },
     });
