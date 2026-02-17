@@ -10,6 +10,7 @@ import { AuthService } from '../../services/auth.service';
 export class Layout {
   protected readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  protected readonly userName = this.authService.getUser()?.nome ?? '';
 
   logout(): void {
     this.authService.logout();

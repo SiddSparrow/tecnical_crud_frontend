@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { switchMap } from 'rxjs/operators';
@@ -12,7 +12,7 @@ import { ProdutoService } from '../../../services/produto.service';
   imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './produto-form.html',
 })
-export class ProdutoForm implements OnInit {
+export class ProdutoForm implements OnInit, OnDestroy {
   private readonly fb = inject(FormBuilder);
   private readonly produtoService = inject(ProdutoService);
   private readonly route = inject(ActivatedRoute);
@@ -46,11 +46,35 @@ export class ProdutoForm implements OnInit {
     }
   }
 
+  ngOnDestroy(): void {
+    this.previewUrls.forEach((url) => URL.revokeObjectURL(url));
+  }
+
   onFilesSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (!input.files) return;
-    this.selectedFiles = Array.from(input.files);
-    this.previewUrls = this.selectedFiles.map((f) => URL.createObjectURL(f));
+
+    const files = Array.from(input.files);
+    const maxFiles = 10;
+    const maxSize = 5 * 1024 * 1024; // 5MB
+
+    if (files.length > maxFiles) {
+      Swal.fire('Limite excedido', `Selecione no máximo ${maxFiles} arquivos.`, 'warning');
+      input.value = '';
+      return;
+    }
+
+    const oversized = files.filter((f) => f.size > maxSize);
+    if (oversized.length > 0) {
+      const names = oversized.map((f) => f.name).join(', ');
+      Swal.fire('Arquivo muito grande', `Máximo 5MB por arquivo. Excedidos: ${names}`, 'warning');
+      input.value = '';
+      return;
+    }
+
+    this.previewUrls.forEach((url) => URL.revokeObjectURL(url));
+    this.selectedFiles = files;
+    this.previewUrls = files.map((f) => URL.createObjectURL(f));
   }
 
   removeSelectedFile(index: number): void {

@@ -16,6 +16,7 @@ export class ClienteList implements OnInit {
   clientes: Cliente[] = [];
   page = 1;
   totalPages = 1;
+  pageNumbers: number[] = [1];
   limit = 10;
   loading = false;
 
@@ -29,6 +30,7 @@ export class ClienteList implements OnInit {
       next: (res) => {
         this.clientes = res.data;
         this.totalPages = res.totalPages;
+        this.pageNumbers = Array.from({ length: this.totalPages }, (_, i) => i + 1);
         this.loading = false;
       },
       error: () => {
@@ -41,10 +43,6 @@ export class ClienteList implements OnInit {
     if (p < 1 || p > this.totalPages) return;
     this.page = p;
     this.loadClientes();
-  }
-
-  pages(): number[] {
-    return Array.from({ length: this.totalPages }, (_, i) => i + 1);
   }
 
   confirmDelete(id: string): void {

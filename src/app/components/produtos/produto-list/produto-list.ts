@@ -18,6 +18,7 @@ export class ProdutoList implements OnInit {
   produtos: Produto[] = [];
   page = 1;
   totalPages = 1;
+  pageNumbers: number[] = [1];
   limit = 10;
   loading = false;
 
@@ -31,6 +32,7 @@ export class ProdutoList implements OnInit {
       next: (res) => {
         this.produtos = res.data;
         this.totalPages = res.totalPages;
+        this.pageNumbers = Array.from({ length: this.totalPages }, (_, i) => i + 1);
         this.loading = false;
       },
       error: () => {
@@ -43,10 +45,6 @@ export class ProdutoList implements OnInit {
     if (p < 1 || p > this.totalPages) return;
     this.page = p;
     this.loadProdutos();
-  }
-
-  pages(): number[] {
-    return Array.from({ length: this.totalPages }, (_, i) => i + 1);
   }
 
   confirmDelete(id: string): void {

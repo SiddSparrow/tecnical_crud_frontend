@@ -56,7 +56,7 @@
         <li class="page-item" [class.disabled]="page === 1">
           <a class="page-link" (click)="changePage(page - 1)" role="button">‹</a>
         </li>
-        @for (p of pages(); track p) {
+        @for (p of pageNumbers; track p) {
           <li class="page-item" [class.active]="p === page">
             <a class="page-link" (click)="changePage(p)" role="button">{{ p }}</a>
           </li>
