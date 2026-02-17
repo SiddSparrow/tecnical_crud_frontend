@@ -1,0 +1,123 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h4 class="mb-0">Novo Pedido</h4>
+  <a routerLink="/pedidos" class="btn btn-outline-secondary btn-sm">← Voltar</a>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    @if (errorMessage) {
+      <div class="alert alert-danger">{{ errorMessage }}</div>
+    }
+
+    <!-- Step 1: Select client -->
+    <div class="mb-4">
+      <h6 class="text-muted fw-semibold text-uppercase small mb-2">1. Cliente</h6>
+      <select class="form-select" [(ngModel)]="selectedClienteId" name="cliente">
+        <option value="">Selecione um cliente…</option>
+        @for (cliente of clientes; track cliente.id) {
+          <option [value]="cliente.id">{{ cliente.razaoSocial }} — {{ cliente.cnpj }}</option>
+        }
+      </select>
+    </div>
+
+    <!-- Step 2: Add products -->
+    <div class="mb-4">
+      <h6 class="text-muted fw-semibold text-uppercase small mb-2">2. Adicionar Produtos</h6>
+      <div class="row g-2 align-items-end">
+        <div class="col-md-6">
+          <label class="form-label mb-1 small">Produto</label>
+          <select class="form-select" [(ngModel)]="selectedProdutoId" name="produto">
+            <option value="">Selecione um produto…</option>
+            @for (produto of produtos; track produto.id) {
+              <option [value]="produto.id">
+                {{ produto.descricao }} — {{ produto.valorVenda | currency: 'BRL' }} (estoque:
+                {{ produto.estoque }})
+              </option>
+            }
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label mb-1 small">Quantidade</label>
+          <input
+            type="number"
+            class="form-control"
+            [(ngModel)]="selectedQuantidade"
+            name="quantidade"
+            min="1"
+          />
+        </div>
+        <div class="col-md-3">
+          <button
+            class="btn btn-outline-primary w-100"
+            type="button"
+            (click)="addItem()"
+            [disabled]="!selectedProdutoId"
+          >
+            + Adicionar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3: Review items -->
+    <div class="mb-4">
+      <h6 class="text-muted fw-semibold text-uppercase small mb-2">3. Itens do Pedido</h6>
+      @if (itens.length === 0) {
+        <p class="text-muted">Nenhum produto adicionado.</p>
+      } @else {
+        <div class="table-responsive">
+          <table class="table table-sm table-bordered">
+            <thead class="table-light">
+              <tr>
+                <th>Produto</th>
+                <th class="text-center" style="width:90px">Qtd</th>
+                <th class="text-end" style="width:120px">Preço Unit.</th>
+                <th class="text-end" style="width:120px">Subtotal</th>
+                <th style="width:50px"></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of itens; track item.produtoId) {
+                <tr>
+                  <td>{{ item.descricao }}</td>
+                  <td class="text-center">{{ item.quantidade }}</td>
+                  <td class="text-end">{{ item.precoUnitario | currency: 'BRL' }}</td>
+                  <td class="text-end">{{ item.subtotal | currency: 'BRL' }}</td>
+                  <td class="text-center">
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-outline-danger"
+                      (click)="removeItem(item.produtoId)"
+                    >✕</button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+            <tfoot>
+              <tr class="fw-bold">
+                <td colspan="3" class="text-end">Total:</td>
+                <td class="text-end">{{ total | currency: 'BRL' }}</td>
+                <td></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      }
+    </div>
+
+    <div class="d-flex gap-2">
+      <button
+        class="btn btn-primary"
+        type="button"
+        (click)="onSubmit()"
+        [disabled]="!canSubmit || loading"
+      >
+        @if (loading) {
+          <span class="spinner-border spinner-border-sm me-2"></span>
+        }
+        Confirmar Pedido
+      </button>
+      <a routerLink="/pedidos" class="btn btn-outline-secondary">Cancelar</a>
+    </div>
+  </div>
+</div>
