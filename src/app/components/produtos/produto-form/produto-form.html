@@ -1,0 +1,137 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h4 class="mb-0">{{ isEditing ? 'Editar Produto' : 'Novo Produto' }}</h4>
+  <a routerLink="/produtos" class="btn btn-outline-secondary btn-sm">← Voltar</a>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    @if (errorMessage) {
+      <div class="alert alert-danger">{{ errorMessage }}</div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="row g-3">
+        <div class="col-12">
+          <label class="form-label">Descrição</label>
+          <input
+            type="text"
+            class="form-control"
+            formControlName="descricao"
+            [class.is-invalid]="form.get('descricao')?.invalid && form.get('descricao')?.touched"
+            placeholder="Nome do produto"
+          />
+          @if (form.get('descricao')?.invalid && form.get('descricao')?.touched) {
+            <div class="invalid-feedback">Informe a descrição.</div>
+          }
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">Valor de Venda (R$)</label>
+          <input
+            type="number"
+            class="form-control"
+            formControlName="valorVenda"
+            [class.is-invalid]="form.get('valorVenda')?.invalid && form.get('valorVenda')?.touched"
+            placeholder="0.00"
+            min="0"
+            step="0.01"
+          />
+          @if (form.get('valorVenda')?.invalid && form.get('valorVenda')?.touched) {
+            <div class="invalid-feedback">Informe um valor válido (≥ 0).</div>
+          }
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">Estoque</label>
+          <input
+            type="number"
+            class="form-control"
+            formControlName="estoque"
+            [class.is-invalid]="form.get('estoque')?.invalid && form.get('estoque')?.touched"
+            placeholder="0"
+            min="0"
+            step="1"
+          />
+          @if (form.get('estoque')?.invalid && form.get('estoque')?.touched) {
+            <div class="invalid-feedback">Informe uma quantidade válida (≥ 0).</div>
+          }
+        </div>
+
+        <!-- Existing images (edit mode) -->
+        @if (isEditing && existingImages.length > 0) {
+          <div class="col-12">
+            <label class="form-label">Imagens Atuais</label>
+            <div class="d-flex flex-wrap gap-2">
+              @for (img of existingImages; track img.id) {
+                <div class="position-relative">
+                  <img
+                    [src]="img.path"
+                    alt="Imagem do produto"
+                    style="width:80px;height:80px;object-fit:cover;border-radius:6px;border:1px solid #dee2e6"
+                  />
+                  <button
+                    type="button"
+                    class="btn btn-danger btn-sm position-absolute top-0 end-0"
+                    style="padding:1px 5px;font-size:11px;line-height:1.4"
+                    (click)="deleteExistingImage(img.id)"
+                    title="Excluir imagem"
+                  >✕</button>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- New image upload -->
+        <div class="col-12">
+          <label class="form-label">
+            {{ isEditing ? 'Adicionar Imagens' : 'Imagens' }}
+            <span class="text-muted small">(até 10 arquivos, max 5MB cada)</span>
+          </label>
+          <input
+            type="file"
+            class="form-control"
+            multiple
+            accept="image/jpeg,image/png,image/gif,image/webp"
+            (change)="onFilesSelected($event)"
+          />
+        </div>
+
+        <!-- Preview of selected files -->
+        @if (previewUrls.length > 0) {
+          <div class="col-12">
+            <label class="form-label">Pré-visualização</label>
+            <div class="d-flex flex-wrap gap-2">
+              @for (url of previewUrls; track url; let i = $index) {
+                <div class="position-relative">
+                  <img
+                    [src]="url"
+                    alt="Preview"
+                    style="width:80px;height:80px;object-fit:cover;border-radius:6px;border:1px solid #dee2e6"
+                  />
+                  <button
+                    type="button"
+                    class="btn btn-danger btn-sm position-absolute top-0 end-0"
+                    style="padding:1px 5px;font-size:11px;line-height:1.4"
+                    (click)="removeSelectedFile(i)"
+                    title="Remover"
+                  >✕</button>
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="mt-4 d-flex gap-2">
+        <button type="submit" class="btn btn-primary" [disabled]="loading">
+          @if (loading) {
+            <span class="spinner-border spinner-border-sm me-2"></span>
+          }
+          Salvar
+        </button>
+        <a routerLink="/produtos" class="btn btn-outline-secondary">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</div>
