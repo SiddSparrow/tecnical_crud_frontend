@@ -1,0 +1,82 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h4 class="mb-0">{{ isEditing ? 'Editar Cliente' : 'Novo Cliente' }}</h4>
+  <a routerLink="/clientes" class="btn btn-outline-secondary btn-sm">← Voltar</a>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    @if (errorMessage) {
+      <div class="alert alert-danger">{{ errorMessage }}</div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="row g-3">
+        <div class="col-md-5">
+          <label class="form-label">CNPJ</label>
+          <div class="input-group">
+            <input
+              type="text"
+              class="form-control"
+              formControlName="cnpj"
+              [class.is-invalid]="form.get('cnpj')?.invalid && form.get('cnpj')?.touched"
+              placeholder="00.000.000/0000-00"
+            />
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              (click)="consultarCnpj()"
+              [disabled]="loadingCnpj"
+            >
+              @if (loadingCnpj) {
+                <span class="spinner-border spinner-border-sm"></span>
+              } @else {
+                Consultar
+              }
+            </button>
+          </div>
+          @if (form.get('cnpj')?.invalid && form.get('cnpj')?.touched) {
+            <div class="text-danger small mt-1">Informe o CNPJ.</div>
+          }
+        </div>
+
+        <div class="col-md-7">
+          <label class="form-label">Razão Social</label>
+          <input
+            type="text"
+            class="form-control"
+            formControlName="razaoSocial"
+            [class.is-invalid]="form.get('razaoSocial')?.invalid && form.get('razaoSocial')?.touched"
+            placeholder="Nome da empresa"
+          />
+          @if (form.get('razaoSocial')?.invalid && form.get('razaoSocial')?.touched) {
+            <div class="invalid-feedback">Informe a razão social.</div>
+          }
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">E-mail</label>
+          <input
+            type="email"
+            class="form-control"
+            formControlName="email"
+            [class.is-invalid]="form.get('email')?.invalid && form.get('email')?.touched"
+            placeholder="contato@empresa.com"
+          />
+          @if (form.get('email')?.invalid && form.get('email')?.touched) {
+            <div class="invalid-feedback">Informe um e-mail válido.</div>
+          }
+        </div>
+      </div>
+
+      <div class="mt-4 d-flex gap-2">
+        <button type="submit" class="btn btn-primary" [disabled]="loading">
+          @if (loading) {
+            <span class="spinner-border spinner-border-sm me-2"></span>
+          }
+          Salvar
+        </button>
+        <a routerLink="/clientes" class="btn btn-outline-secondary">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</div>
