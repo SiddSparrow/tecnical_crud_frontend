@@ -3,11 +3,12 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { CreatePedidoDto, Pedido } from '../models/pedido.model';
 import { PaginatedResponse } from '../models/paginated-response.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class PedidoService {
   private readonly http = inject(HttpClient);
-  private readonly API = '/api/v1/pedidos';
+  private readonly API = `${environment.apiUrl}/api/v1/pedidos`;
 
   list(page = 1, limit = 10): Observable<PaginatedResponse<Pedido>> {
     return this.http.get<PaginatedResponse<Pedido>>(this.API, {
